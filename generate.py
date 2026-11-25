@@ -47,7 +47,7 @@ for t, s in zip(res_fc1["daily"]["time"], res_fc1["daily"]["sunshine_duration"])
 
 # 2. Maspalomas (Satellit + Forecast)
 d2 = {}
-res_sat2 = hole_json("https://open-meteo.com", {
+res_sat2 = hole_json("https://api.open-meteo.com", {
     "latitude": LAT_2, "longitude": LON_2,
     "start_date": start_archiv.strftime("%Y-%m-%d"),
     "end_date": gestern.strftime("%Y-%m-%d"),
@@ -57,7 +57,7 @@ for t, s in zip(res_sat2["daily"]["time"], res_sat2["daily"]["sunshine_duration"
     if s is not None:
         d2[t] = (round(s / 3600.0, 2), "past")
 
-res_fc2 = hole_json("https://open-meteo.com" + "/v1/archive", {
+res_fc2 = hole_json("https://api.open-meteo.com" + "/v1/archive", {
     "latitude": LAT_2, "longitude": LON_2, "daily": "sunshine_duration",
     "timezone": "auto", "forecast_days": VORHERSAGE_TAGE
 })
