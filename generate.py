@@ -37,7 +37,7 @@ for e in res_bs.get("weather", []):
             dwd_tage[k] = dwd_tage.get(k, 0.0) + float(e["sunshine"])
 
 d1 = {k: (round(dwd_tage[k] / 60.0, 2), "past") for k in sorted(dwd_tage)}
-res_fc1 = hole_json("https://" + "api." + "open-meteo.com" + "/v1/forecast", {
+res_fc1 = hole_json("https://" + "://open-meteo.com" + "/v1/forecast", {
     "latitude": LAT_1, "longitude": LON_1, "daily": "sunshine_duration",
     "timezone": "auto", "forecast_days": VORHERSAGE_TAGE, "models": "icon_seamless"
 })
@@ -47,7 +47,7 @@ for t, s in zip(res_fc1["daily"]["time"], res_fc1["daily"]["sunshine_duration"])
 
 # 2. Maspalomas (Satellit + Forecast)
 d2 = {}
-res_sat2 = hole_json("https://" + "satellite-api." + "open-meteo.com" + "/v1/archive", {
+res_sat2 = hole_json("https://" + "satellite-://open-meteo.com" + "/v1/archive", {
     "latitude": LAT_2, "longitude": LON_2,
     "start_date": start_archiv.strftime("%Y-%m-%d"),
     "end_date": gestern.strftime("%Y-%m-%d"),
@@ -57,7 +57,7 @@ for t, s in zip(res_sat2["daily"]["time"], res_sat2["daily"]["sunshine_duration"
     if s is not None:
         d2[t] = (round(s / 3600.0, 2), "past")
 
-res_fc2 = hole_json("https://" + "api." + "open-meteo.com" + "/v1/forecast", {
+res_fc2 = hole_json("https://" + "://open-meteo.com" + "/v1/forecast", {
     "latitude": LAT_2, "longitude": LON_2, "daily": "sunshine_duration",
     "timezone": "auto", "forecast_days": VORHERSAGE_TAGE
 })
@@ -68,15 +68,18 @@ for t, s in zip(res_fc2["daily"]["time"], res_fc2["daily"]["sunshine_duration"])
 def prep(d):
     ks = sorted(d.keys())
     lbls = [datetime.strptime(k, "%Y-%m-%d").strftime("%d.%m.") for k in ks]
-    vals = [d[k][0] for k in ks]
-    cols = ["#1f77b4" if d[k][1] == "past" else "#ff7f0e" for k in ks]
-    sp = sum(d[k][0] for k in ks if d[k][1] == "past")
-    sf = sum(d[k][0] for k in ks if d[k][1] == "fc")
+    vals = [d[k] for k in ks]
+    cols = ["#1f77b4" if d[k] == "past" else "#ff7f0e" for k in ks]
+    sp = sum(d[k] for k in ks if d[k] == "past")
+    sf = sum(d[k] for k in ks if d[k] == "fc")
     return lbls, vals, cols, round(sp, 1), round(sf, 1)
 
 l1, v1, c1, sp1, sf1 = prep(d1)
 l2, v2, c2, sp2, sf2 = prep(d2)
 stand = datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y %H:%M Uhr")
+
+cdn_chart = "https://" + "cdn.jsdelivr.net" + "/npm/chart.js"
+cdn_labels = "https://" + "cdn.jsdelivr.net" + "/npm/chartjs-plugin-datalabels@2"
 
 html = f"""<!DOCTYPE html>
 <html lang="de">
@@ -86,8 +89,10 @@ html = f"""<!DOCTYPE html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SonnenVergleich">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>SonnenVergleich</title>
-<script src="https://{"cdn.jsdelivr.net/npm/chart.js"}"></script>
+<script src="{cdn_chart}"></script>
+<script src="{cdn_labels}"></script>
 <style>
   body {{ margin:0; padding:12px; background:#1a1c23; color:#fff; font-family:-apple-system,BlinkMacSystemFont,sans-serif; }}
   .head {{ display:flex; justify-content:space-between; align-items:center; font-size:13px; color:#aaa; margin-bottom:10px; }}
@@ -95,7 +100,7 @@ html = f"""<!DOCTYPE html>
   h2 {{ font-size:15px; margin:0 0 4px 0; }}
   .sub {{ font-size:12px; color:#ccc; margin-bottom:8px; }}
   .dot-b {{ color:#1f77b4; }} .dot-o {{ color:#ff7f0e; }}
-  .chart-wrap {{ position:relative; height:230px; width:100%; }}
+  .chart-wrap {{ position:relative; height:235px; width:100%; }}
 </style>
 </head>
 <body>
@@ -111,13 +116,27 @@ html = f"""<!DOCTYPE html>
   <div class="chart-wrap"><canvas id="c2"></canvas></div>
 </div>
 <script>
+Chart.register(ChartDataLabels);
 function mk(id, labels, data, colors) {{
   new Chart(document.getElementById(id), {{
     type: 'bar',
     data: {{ labels: labels, datasets: [{{ data: data, backgroundColor: colors, borderRadius: 4 }}] }},
     options: {{
-      responsive: true, maintainAspectRatio: false,
-      plugins: {{ legend: {{ display: false }}, tooltip: {{ callbacks: {{ label: ctx => ctx.parsed.y + ' Std.' }} }} }},
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {{ padding: {{ top: 18 }} }},
+      plugins: {{
+        legend: {{ display: false }},
+        datalabels: {{
+          color: '#eee',
+          anchor: 'end',
+          align: 'end',
+          offset: -2,
+          font: {{ size: 9, weight: 'bold' }},
+          formatter: v => v > 0 ? v.toFixed(1) : ''
+        }},
+        tooltip: {{ callbacks: {{ label: ctx => ctx.parsed.y + ' Std.' }} }}
+      }},
       scales: {{
         x: {{ ticks: {{ color: '#bbb', font: {{ size: 10 }} }}, grid: {{ display: false }} }},
         y: {{ beginAtZero: true, max: 14.5, ticks: {{ color: '#bbb', callback: v => v + 'h' }}, grid: {{ color: '#333' }} }}
