@@ -1,23 +1,29 @@
 name: Update Sonnenvergleich
 on:
   schedule:
-    - cron: '15 */3 * * *' # Aktualisiert alle 3 Stunden automatisch
-  workflow_dispatch:       # Ermöglicht manuelles Aktualisieren per Klick
+    - cron: '15 */3 * * *'
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - name: HTML erzeugen
+        run: |
+          mkdir -p _site
+          python3 generate.py
+          cp index.html _site/index.html
+      - uses: actions/upload-pages-artifact@v4
         with:
-          python-version: '3.11'
-      - run: python generate.py
-      - uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          keep_files: false
+          path: '_site'
+      - id: deployment
+        uses: actions/deploy-pages@v4
