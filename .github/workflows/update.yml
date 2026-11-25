@@ -1,0 +1,23 @@
+name: Update Sonnenvergleich
+on:
+  schedule:
+    - cron: '15 */3 * * *' # Aktualisiert alle 3 Stunden automatisch
+  workflow_dispatch:       # Ermöglicht manuelles Aktualisieren per Klick
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python generate.py
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          keep_files: false
