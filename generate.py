@@ -66,13 +66,18 @@ for t, s in zip(res_fc2["daily"]["time"], res_fc2["daily"]["sunshine_duration"])
         d2[t] = (round(s / 3600.0, 2), "fc")
 
 def prep(d):
-    ks = sorted(d.keys())
-    lbls = [datetime.strptime(k, "%Y-%m-%d").strftime("%d.%m.") for k in ks]
-    vals = [d[k] for k in ks]
-    cols = ["#1f77b4" if d[k] == "past" else "#ff7f0e" for k in ks]
-    sp = sum(d[k] for k in ks if d[k] == "past")
-    sf = sum(d[k] for k in ks if d[k] == "fc")
+    lbls, vals, cols = [], [], []
+    sp, sf = 0.0, 0.0
+    for k, (wert, typ) in sorted(d.items()):
+        lbls.append(datetime.strptime(k, "%Y-%m-%d").strftime("%d.%m."))
+        vals.append(wert)
+        cols.append("#1f77b4" if typ == "past" else "#ff7f0e")
+        if typ == "past":
+            sp += wert
+        else:
+            sf += wert
     return lbls, vals, cols, round(sp, 1), round(sf, 1)
+
 
 l1, v1, c1, sp1, sf1 = prep(d1)
 l2, v2, c2, sp2, sf2 = prep(d2)
