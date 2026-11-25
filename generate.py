@@ -37,7 +37,7 @@ for e in res_bs.get("weather", []):
             dwd_tage[k] = dwd_tage.get(k, 0.0) + float(e["sunshine"])
 
 d1 = {k: (round(dwd_tage[k] / 60.0, 2), "past") for k in sorted(dwd_tage)}
-res_fc1 = hole_json("https://api.open-meteo.com" + "/v1/forecast", {
+res_fc1 = hole_json("https://" + "api." + "open-meteo.com" + "/v1/forecast", {
     "latitude": LAT_1, "longitude": LON_1, "daily": "sunshine_duration",
     "timezone": "auto", "forecast_days": VORHERSAGE_TAGE, "models": "icon_seamless"
 })
@@ -47,7 +47,7 @@ for t, s in zip(res_fc1["daily"]["time"], res_fc1["daily"]["sunshine_duration"])
 
 # 2. Maspalomas (Satellit + Forecast)
 d2 = {}
-res_sat2 = hole_json("https://api.open-meteo.com", {
+res_sat2 = hole_json("https://" + "satellite-api." + "open-meteo.com" + "/v1/archive", {
     "latitude": LAT_2, "longitude": LON_2,
     "start_date": start_archiv.strftime("%Y-%m-%d"),
     "end_date": gestern.strftime("%Y-%m-%d"),
@@ -57,7 +57,7 @@ for t, s in zip(res_sat2["daily"]["time"], res_sat2["daily"]["sunshine_duration"
     if s is not None:
         d2[t] = (round(s / 3600.0, 2), "past")
 
-res_fc2 = hole_json("https://api.open-meteo.com" + "/v1/archive", {
+res_fc2 = hole_json("https://" + "api." + "open-meteo.com" + "/v1/forecast", {
     "latitude": LAT_2, "longitude": LON_2, "daily": "sunshine_duration",
     "timezone": "auto", "forecast_days": VORHERSAGE_TAGE
 })
