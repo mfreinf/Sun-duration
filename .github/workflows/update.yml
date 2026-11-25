@@ -22,8 +22,10 @@ jobs:
           mkdir -p _site
           python3 generate.py
           cp index.html _site/index.html
-      - uses: actions/upload-pages-artifact@v4
+      - name: Pages-Paket hochladen
+        uses: actions/upload-pages-artifact@v4
         with:
           path: '_site'
-      - id: deployment
+      - name: Auf GitHub Pages veröffentlichen
+        id: deployment
         uses: actions/deploy-pages@v4
