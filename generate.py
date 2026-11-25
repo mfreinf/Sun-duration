@@ -57,7 +57,7 @@ for t, s in zip(res_sat2["daily"]["time"], res_sat2["daily"]["sunshine_duration"
     if s is not None:
         d2[t] = (round(s / 3600.0, 2), "past")
 
-res_fc1 = hole_json("https://" + "api.open-meteo.com" + "/v1/forecast", {
+res_fc2 = hole_json("https://" + "api.open-meteo.com" + "/v1/forecast", {
     "latitude": LAT_2, "longitude": LON_2, "daily": "sunshine_duration",
     "timezone": "auto", "forecast_days": VORHERSAGE_TAGE
 })
