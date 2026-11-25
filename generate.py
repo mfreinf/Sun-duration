@@ -37,7 +37,7 @@ for e in res_bs.get("weather", []):
             dwd_tage[k] = dwd_tage.get(k, 0.0) + float(e["sunshine"])
 
 d1 = {k: (round(dwd_tage[k] / 60.0, 2), "past") for k in sorted(dwd_tage)}
-res_fc1 = hole_json("https://open-meteo.com" + "/v1/forecast", {
+res_fc1 = hole_json("https://api.open-meteo.com" + "/v1/forecast", {
     "latitude": LAT_1, "longitude": LON_1, "daily": "sunshine_duration",
     "timezone": "auto", "forecast_days": VORHERSAGE_TAGE, "models": "icon_seamless"
 })
