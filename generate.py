@@ -78,8 +78,8 @@ l1, v1, c1, sp1, sf1 = prep(d1)
 l2, v2, c2, sp2, sf2 = prep(d2)
 stand = datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y %H:%M Uhr")
 
-cdn_chart = "https://" + "cdn.jsdelivr.net" + "/npm/chart.js"
-cdn_labels = "https://" + "cdn.jsdelivr.net" + "/npm/chartjs-plugin-datalabels@2"
+cdn_chart = "https://" + "cdn." + "jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
+cdn_labels = "https://" + "cdn." + "jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"
 
 html = f"""<!DOCTYPE html>
 <html lang="de">
