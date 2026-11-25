@@ -13,14 +13,16 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: HTML erzeugen
-        run: python3 generate.py
+        run: |
+          python3 generate.py
+          cp index.html /tmp/index.html
       - name: Auf gh-pages speichern
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git checkout --orphan gh-pages
           git rm -rf .
-          python3 generate.py
+          cp /tmp/index.html index.html
           git add index.html
           git commit -m "Update"
           git push -f origin gh-pages
