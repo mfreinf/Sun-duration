@@ -87,7 +87,7 @@ html = f"""<!DOCTYPE html>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SonnenVergleich">
 <title>SonnenVergleich</title>
-<script src="https://jsdelivr.net"></script>
+<script src="https://{"cdn.jsdelivr.net/npm/chart.js"}"></script>
 <style>
   body {{ margin:0; padding:12px; background:#1a1c23; color:#fff; font-family:-apple-system,BlinkMacSystemFont,sans-serif; }}
   .head {{ display:flex; justify-content:space-between; align-items:center; font-size:13px; color:#aaa; margin-bottom:10px; }}
